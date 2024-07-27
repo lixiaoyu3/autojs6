@@ -50,25 +50,76 @@ function navigateToSignIn() {
   log("正在进入签到页面");
   // 这里需要根据实际界面编写点击操作
   // 例如:
-  // click(100, 200); // 点击"我的"
-  // sleep(1000);
-  // click(300, 400); // 点击"签到领京豆"
+  click(965, 2330); // 点击"我的"
+  sleep(1000);
+  click(340, 1626); // 点击"签到领京豆"
   sleep(2000);
 }
 
 // 执行签到
 function signIn() {
-  log("正在签到");
-  // 这里需要根据实际界面编写签到操作
-  // 例如:
-  // if(text("签到").exists()) {
-  //   text("签到").findOne().click();
-  // } else {
-  //   log("今日已签到");
-  // }
-  sleep(2000);
+  log("开始执行签到操作");
+  
+  // 等待签到按钮出现
+  let signButton = text("签到").findOne(3000);
+  if (signButton) {
+    log("找到签到按钮，点击签到");
+    signButton.click();
+    sleep(2000);
+    
+    // 检查是否签到成功
+    if (textContains("签到成功").exists() || textContains("已连续签到").exists()) {
+      log("签到成功");
+    } else {
+      log("未检测到签到成功提示，可能出现异常");
+    }
+  } else {
+    log("未找到签到按钮，检查是否已经签到");
+    
+    // 检查是否已经签到
+    if (textContains("已签到").exists() || textContains("已连续签到").exists()) {
+      log("今日已签到");
+    } else {
+      log("未找到签到按钮且未检测到已签到状态，可能页面加载异常");
+    }
+  }
+  
+  // 尝试关闭可能出现的弹窗
+  closePopups();
+  
+  // 尝试领取额外奖励
+  collectExtraRewards();
+  
+  log("签到操作执行完毕");
 }
 
+function closePopups() {
+  log("尝试关闭可能的弹窗");
+  
+  // 常见的关闭按钮文本
+  let closeTexts = ["关闭", "我知道了", "朕知道了"];
+  
+  for (let text of closeTexts) {
+    let closeButton = textContains(text).findOne(1000);
+    if (closeButton) {
+      log("找到弹窗，正在关闭");
+      closeButton.click();
+      sleep(1000);
+    }
+  }
+}
+
+function collectExtraRewards() {
+  log("尝试领取额外奖励");
+  
+  // 查找并点击可能的额外奖励按钮
+  let extraRewardButtons = textMatches(/(领取奖励|领取京豆|摇京豆)/).find();
+  for (let button of extraRewardButtons) {
+    log("发现额外奖励，正在领取");
+    button.click();
+    sleep(2000);
+  }
+}
 // 关闭App
 function closeApp() {
   log("正在关闭京东App");
