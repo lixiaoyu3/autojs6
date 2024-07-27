@@ -127,9 +127,19 @@ function closeApp() {
   sleep(1000);
 }
 
+
 // 主函数
 function main() {
-  unLock();
+  log("开始执行京东签到流程");
+
+  if (isScreenLocked()) {
+    log("设备当前处于锁屏状态");
+    wakeUpDevice();
+    unLock();
+  } else {
+    log("设备已解锁，无需进行解锁操作");
+  }
+
   openJDApp();
   navigateToSignIn();
   signIn();
